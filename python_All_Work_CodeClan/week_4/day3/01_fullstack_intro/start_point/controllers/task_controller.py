@@ -1,0 +1,71 @@
+import re
+from flask import Flask, render_template, request, redirect
+from models.task import Task
+from flask import Blueprint
+from repositories import task_repository, user_repository
+tasks_blueprint = Blueprint("tasks", __name__)
+
+@tasks_blueprint.route('/tasks')
+def tasks():
+    tasks = task_repository.select_all()
+    print(tasks)
+    return render_template("tasks/index.html", tasks=tasks)
+
+# CREATE - page to look at a list of your tasks 
+# GET'/tasks/new'
+@tasks_blueprint.route('/tasks/new', methods=['GET'])
+def new_task():
+    users = user_repository.select_all()
+    return render_template('tasks/new.html', all_users=users)
+
+# CREATE route to post to '/tasks'
+# GET '/tasks/<id>'
+# lets you add a new task to the '/task' page
+@tasks_blueprint.route('/tasks', methods=['POST'])
+def create_task():
+    description = request.form['description']
+    user_id = request.form['user_id']
+    duration = request.form['duration']
+    completed = request.form['completed']
+    user = user_repository.select(user_id)
+    task = Task(description, user, duration, completed)
+    task_repository.save(task)
+    return redirect('/tasks')
+
+# READ - shows the task that is selcted via the task id
+@tasks_blueprint.route('/tasks/<id>', methods=['GET'])
+def show_task(id):
+    task = task_repository.select(id)
+    return render_template('tasks/show.html', task=task)
+
+
+# EDIT
+# GET '/tasks/<id>/edit'
+@tasks_blueprint.route('/tasks/<id>/edit', methods=['GET'])
+def edit_task(id):
+    task = task_repository.select(id)
+    users = user_repository.select_all()
+    return render_template('tasks/edit.html', task = task, all_users = users)
+
+
+# UPDATE
+# POST '/tasks/<id>'
+@tasks_blueprint.route('/tasks/<id>', methods=['POST'])
+def update_task(id):
+    description = request.form['description']
+    user = user_repository.select(request.form['user_id']) # shortuct version to add the select function and also the request form aswell
+    duration = request.form['duration']
+    completed = request.form['completed']
+    task = Task(description, user, duration, completed, id)
+    task_repository.update(task)
+    return redirect('/tasks')
+
+
+
+
+# DELETE
+# DELETE '/tasks/<id>/delete'
+@tasks_blueprint.route('/tasks/<id>/delete', methods=['POST'])
+def delete_task(id):
+    task_repository.delete(id)
+    return redirect('/tasks')

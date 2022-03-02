@@ -1,0 +1,36 @@
+header > nav {
+height: 100px;
+background-color: bisque;
+display: flex;
+flex-direction: column;
+justify-content: center;
+}
+
+header > nav > ul {
+list-style: none;
+display: flex;
+justify-content: center;
+}
+
+header > nav > ul > li {
+    margin-right: 10px;
+    border: 1px solid chocolate;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#wrapper {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.card {
+    width: 250px;
+    height: 250px;
+    margin: 10px;
+    background-color: rgb(102, 96, 96);
+    border: 5px solid bisque;
+    padding: 10px;
+}
+
